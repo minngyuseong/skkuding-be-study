@@ -1,0 +1,6 @@
+{
+  "version": "1",
+  "name": "tasty-track-nest",
+  "type": "collection",
+  "ignore": ["node_modules", ".git"]
+}

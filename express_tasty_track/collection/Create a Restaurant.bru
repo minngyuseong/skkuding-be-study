@@ -1,0 +1,19 @@
+meta {
+  name: Create a Restaurant
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/restaurants/create
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "name": "봉수육",
+    "location": "서울특별시 마포구",
+    "cuisine": "한식"
+  }
+}

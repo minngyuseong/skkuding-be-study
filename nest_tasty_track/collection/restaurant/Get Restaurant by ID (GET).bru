@@ -1,0 +1,15 @@
+meta {
+  name: Get Restaurant by ID (GET)
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/restaurants/:id
+  body: none
+  auth: inherit
+}
+
+params:path {
+  id: 1
+}

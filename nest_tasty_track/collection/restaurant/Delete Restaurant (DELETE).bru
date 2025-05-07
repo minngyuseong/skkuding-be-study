@@ -1,0 +1,15 @@
+meta {
+  name: Delete Restaurant (DELETE)
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{baseUrl}}/restaurants/:id
+  body: none
+  auth: inherit
+}
+
+params:path {
+  id: 1
+}

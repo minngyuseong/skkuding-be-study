@@ -1,0 +1,24 @@
+meta {
+  name: Update Restaurant (PATCH)
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{baseUrl}}/restaurants/:id
+  body: json
+  auth: inherit
+}
+
+params:path {
+  id: 1
+}
+
+body:json {
+  {
+    "name": "Updated Restaurant Name",
+    "location": "Busan",
+    "cuisine": "Seafood",
+    "rating": 4.8
+  }
+}

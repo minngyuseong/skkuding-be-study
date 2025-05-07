@@ -1,0 +1,20 @@
+meta {
+  name: Create Restaurant (POST)
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/restaurants
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "name": "The Spicy Grill",
+    "location": "Seoul",
+    "cuisine": "Korean BBQ",
+    "rating": 4.5
+  }
+}
