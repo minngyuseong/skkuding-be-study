@@ -1,7 +1,11 @@
-import { Injectable } from '@nestjs/common';
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateRestaurantDto } from './dto/create-restaurant.dto';
-import { UpdateRestaurantDto } from './dto/update-restaurant.dto';
-
 export interface Restaurant {
   id: number;
   name: string;
@@ -12,48 +16,61 @@ export interface Restaurant {
 
 @Injectable()
 export class RestaurantsService {
-  private restaurants: Restaurant[] = [];
+  constructor(private prisma: PrismaService) {}
+  // private restaurants: Restaurant[] = [];
 
-  create(createRestaurantDto: CreateRestaurantDto) {
-    const newRestaurant: Restaurant = {
-      id: this.restaurants.length + 1,
-      ...createRestaurantDto,
-    };
-    this.restaurants.push(newRestaurant);
-    return newRestaurant;
+  //example
+  async getAllRestaurants() {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+    return await this.prisma.restaurant.findMany({
+      select: {
+        name: true,
+        address: true,
+        phone: true,
+      },
+    });
   }
 
-  findAll() {
-    return this.restaurants;
+  async create(createRestaurantDto: CreateRestaurantDto) {
+    // DTO에서 Prisma 모델에 맞는 필드만 추출
+    const { name, address, phone, rating } = createRestaurantDto as any;
+    return await this.prisma.restaurant.create({
+      data: { name, address, phone, rating },
+    });
   }
 
-  findOne(id: number) {
-    return (
-      this.restaurants.find((restaurant) => restaurant.id === id) ||
-      'Restaurant not found'
-    );
+  async findOne(id: number) {
+    return await this.prisma.restaurant.findUnique({
+      where: { id },
+    });
   }
 
-  update(id: number, updateRestaurantDto: UpdateRestaurantDto) {
-    const index = this.restaurants.findIndex(
-      (restaurant) => restaurant.id === id,
-    );
-    if (index === -1) return 'Restaurant not found';
-
-    this.restaurants[index] = {
-      ...this.restaurants[index],
-      ...updateRestaurantDto,
-    };
-    return this.restaurants[index];
+  async update(id: number, updateRestaurantDto: Partial<CreateRestaurantDto>) {
+    return await this.prisma.restaurant.update({
+      where: { id },
+      data: updateRestaurantDto,
+    });
   }
 
-  remove(id: number) {
-    const index = this.restaurants.findIndex(
-      (restaurant) => restaurant.id === id,
-    );
-    if (index === -1) return 'Restaurant not found';
-
-    const deleted = this.restaurants.splice(index, 1);
-    return deleted[0];
+  async remove(id: number) {
+    try {
+      return await this.prisma.restaurant.delete({
+        where: { id },
+      });
+    } catch (error) {
+      // Prisma 에러 중 P2025 코드 (삭제할 레코드를 찾을 수 없을 때) 확인
+      if (
+        error instanceof PrismaClientKnownRequestError &&
+        error.code === 'P2025'
+      ) {
+        throw new NotFoundException(`ID가 ${id}인 곳을 찾을 수 없습니다.`);
+      }
+      // 그 외 다른 에러는 다시 발생시킴
+      throw error;
+    }
   }
+
+  // findAll() {
+  //   return this.restaurants;
+  // }
 }

@@ -8,7 +8,6 @@ import {
   Post,
 } from '@nestjs/common';
 import { CreateRestaurantDto } from './dto/create-restaurant.dto';
-import { UpdateRestaurantDto } from './dto/update-restaurant.dto';
 import { RestaurantsService } from './restaurants.service';
 
 //안녕??
@@ -23,7 +22,7 @@ export class RestaurantsController {
 
   @Get()
   findAll() {
-    return this.restaurantsService.findAll();
+    return this.restaurantsService.getAllRestaurants();
   }
 
   @Get(':id')
@@ -34,7 +33,7 @@ export class RestaurantsController {
   @Patch(':id')
   update(
     @Param('id') id: string,
-    @Body() updateRestaurantDto: UpdateRestaurantDto,
+    @Body() updateRestaurantDto: Partial<CreateRestaurantDto>,
   ) {
     return this.restaurantsService.update(+id, updateRestaurantDto);
   }
